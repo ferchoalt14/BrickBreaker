@@ -3,7 +3,7 @@
 
 #include <QGraphicsView>
 #include <QKeyEvent>
-#include "MotorJuego.h"
+#include "motorjuego.h"
 
 class pruebaMotor : public QGraphicsView
 {
@@ -12,7 +12,7 @@ private:
     MotorJuego *motor;
     void keyPressEvent(QKeyEvent *event) override;
 public:
-    pruebaMotor(QWidget *parent = nullptr);
+    explicit pruebaMotor(QWidget *parent = nullptr);
     ~pruebaMotor() override;
 };
 

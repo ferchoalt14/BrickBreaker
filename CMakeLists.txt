@@ -14,6 +14,8 @@ qt_add_executable(BrickBreaker
     main.cpp
     motorjuego.h motorjuego.cpp
     pruebamotor.h pruebamotor.cpp
+    startscreen.h startscreen.cpp
+    resources.qrc
 )
 
 target_link_libraries(BrickBreaker PRIVATE
