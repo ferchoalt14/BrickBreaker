@@ -17,6 +17,8 @@ qt_add_executable(BrickBreaker
     startscreen.h startscreen.cpp
     loginscreen.h loginscreen.cpp
     storyscreen.h storyscreen.cpp
+    menuscreen.h menuscreen.cpp
+    mapscreen.h mapscreen.cpp
     usuario.h usuario.cpp
     gestorusuarios.h gestorusuarios.cpp
     resources.qrc
