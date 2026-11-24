@@ -1,5 +1,11 @@
 <RCC>
     <qresource prefix="/">
         <file>images/startScreen.jpg</file>
+        <file>images/loginScreen.jpg</file>
+        <file>images/basicScreen.jpg</file>
+        <file>images/rulesScreen1.jpg</file>
+        <file>images/rulesScreen2.jpg</file>
+        <file>images/rulesScreen3.jpg</file>
+        <file>images/rulesScreen4.jpg</file>
     </qresource>
 </RCC>

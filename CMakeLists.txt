@@ -15,6 +15,10 @@ qt_add_executable(BrickBreaker
     motorjuego.h motorjuego.cpp
     pruebamotor.h pruebamotor.cpp
     startscreen.h startscreen.cpp
+    loginscreen.h loginscreen.cpp
+    storyscreen.h storyscreen.cpp
+    usuario.h usuario.cpp
+    gestorusuarios.h gestorusuarios.cpp
     resources.qrc
 )
 

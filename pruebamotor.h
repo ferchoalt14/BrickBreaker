@@ -14,6 +14,7 @@ private:
 public:
     explicit pruebaMotor(QWidget *parent = nullptr);
     ~pruebaMotor() override;
+    void iniciar();
 };
 
 #endif // PRUEBAMOTOR_H

@@ -7,9 +7,21 @@ StartScreen::StartScreen(QWidget *parent) : QWidget(parent) {
     fondo = QPixmap(":/images/startScreen.jpg");
     setFixedSize(820, 620);
 
+    // Botones con fondo oscuro, borde neon y texto en negrita para que resalten.
+    setStyleSheet(
+        "QPushButton { background-color: rgba(8, 10, 30, 230); color: white;"
+        "  border: 2px solid #00e5ff; border-radius: 8px;"
+        "  font-size: 16px; font-weight: bold; }"
+        "QPushButton:hover { background-color: #7a3cff; border-color: white; }"
+        "QPushButton:pressed { background-color: #4b1fb8; }"
+        "QPushButton#salir { border-color: #ff3c8e; }"
+        "QPushButton#salir:hover { background-color: #ff3c8e; }"
+    );
+
     btnIniciarSesion = new QPushButton("Iniciar sesion", this);
     btnCrearCuenta = new QPushButton("Crear cuenta", this);
     btnSalir = new QPushButton("Salir", this);
+    btnSalir->setObjectName("salir");
 
     btnIniciarSesion->setFixedSize(220, 46);
     btnCrearCuenta->setFixedSize(220, 46);
