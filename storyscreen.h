@@ -7,17 +7,17 @@
 #include <QLabel>
 #include <QPushButton>
 
-// Historia introductoria: 4 paginas (imagen + texto) sobre el fondo basicScreen.
+
 class StoryScreen : public QWidget
 {
     Q_OBJECT
 
 public:
     explicit StoryScreen(QWidget *parent = nullptr);
-    void iniciar();     // vuelve a la primera pagina
+    void iniciar();
 
 signals:
-    void historiaTerminada();   // se emite al terminar o al saltar
+    void historiaTerminada();
 
 protected:
     void paintEvent(QPaintEvent *event) override;
@@ -43,4 +43,4 @@ private:
     QPushButton *btnSaltar;
 };
 
-#endif // STORYSCREEN_H
+#endif

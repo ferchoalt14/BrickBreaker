@@ -1,152 +1,145 @@
 #include "motorjuego.h"
-#include <QBrush>
-#include <QPen>
+#include "configjuego.h"
+#include <QColor>
 
-MotorJuego::MotorJuego(QObject *parent): QObject(parent){
+MotorJuego::MotorJuego(QObject *parent) : QObject(parent),
+    escena(nullptr), timer(nullptr), paleta(nullptr), pelota(nullptr),
+    filas(0), columnas(0), matriz(nullptr), bloquesRestantes(0)
+{
     escena = new QGraphicsScene(this);
-    paleta = nullptr;
-    pelota = nullptr;
-    timer = new QTimer(this);
-    filas = 4;
-    columnas = 6;
-    matriz_bloques = nullptr;
-    vx = 2.5;
-    vy = -3.0;
+    escena->setSceneRect(0, 0, Config::ESCENA_ANCHO, Config::ESCENA_ALTO);
+    escena->setBackgroundBrush(QColor("#0b0f1e"));
 
-    escena->setSceneRect(0,0,800,600);
-
-    paleta = escena->addRect(0,0,100,14);
-    paleta->setBrush(QBrush(Qt::cyan));
-    paleta->setPos(350, 530);
-
-    pelota = escena->addEllipse(0, 0, 20, 20);
-    pelota->setBrush(QBrush(Qt::yellow));
-    pelota->setPos(390, 350);
-
+    paleta = new Paleta(escena);
+    pelota = new Pelota(escena);
     crearNivelBasico();
 
+    timer = new QTimer(this);
+    timer->setTimerType(Qt::PreciseTimer);   // temporizador de alta precision
     connect(timer, &QTimer::timeout, this, &MotorJuego::actualizarFrame);
 }
 
-MotorJuego::~MotorJuego() {
+// Orden importante: la escena (hija de este objeto) sigue viva mientras
+// se liberan ladrillos, pelota y paleta.
+MotorJuego::~MotorJuego()
+{
+    if (timer) {
+        timer->stop();
+    }
     liberarBloques();
+    delete pelota;
+    pelota = nullptr;
+    delete paleta;
+    paleta = nullptr;
 }
 
-void MotorJuego::crearNivelBasico() {
+// >>> EXTENSION (niveles 2 y 3): aqui se decide que tipo de ladrillo va en cada celda.
+// Ejemplo nivel 2: fila 0 -> Reforzado; columna 7 -> Indestructible.
+TipoBloque MotorJuego::tipoParaCelda(int fila, int columna) const
+{
+    Q_UNUSED(fila);
+    Q_UNUSED(columna);
+    return TipoBloque::Normal;
+}
+
+void MotorJuego::crearNivelBasico()
+{
     liberarBloques();
 
-    matriz_bloques = new QGraphicsRectItem**[filas];
+    filas = Config::FILAS;
+    columnas = Config::COLUMNAS;
+    bloquesRestantes = 0;
 
-    double anchoBloque = 100.0;
-    double altoBloque = 25.0;
-    double separacion = 10.0;
-    double inicioX = 75.0;
-    double inicioY = 60.0;
+    // Matriz dinamica: arreglo de filas, y cada fila es un arreglo de Bloque
+    matriz = new Bloque*[filas];
+    for (int f = 0; f < filas; ++f) {
+        matriz[f] = new Bloque[columnas];
+    }
 
     for (int f = 0; f < filas; ++f) {
-        matriz_bloques[f] = new QGraphicsRectItem*[columnas];
         for (int c = 0; c < columnas; ++c) {
-            QGraphicsRectItem *bloque = escena->addRect(0, 0, anchoBloque, altoBloque);
-            bloque->setBrush(QBrush(f%2 == 0 ? Qt::red : Qt::green));
-            bloque->setPen(QPen(Qt::white, 1));
-            bloque->setPos(inicioX + c * (anchoBloque + separacion),inicioY + f * (altoBloque + separacion));
-            matriz_bloques[f][c] = bloque;
+            double x = Config::BLOQUES_INICIO_X + c * (Config::BLOQUE_ANCHO + Config::BLOQUE_SEPARACION);
+            double y = Config::BLOQUES_INICIO_Y + f * (Config::BLOQUE_ALTO + Config::BLOQUE_SEPARACION);
+            TipoBloque tipo = tipoParaCelda(f, c);
+
+            matriz[f][c].crear(escena, x, y, tipo);
+            if (tipo != TipoBloque::Indestructible) {
+                ++bloquesRestantes;
+            }
         }
     }
 }
 
-void MotorJuego::liberarBloques() {
-    if (!matriz_bloques) {
+// delete[] de cada fila llama al destructor de cada Bloque (que libera su objeto grafico)
+void MotorJuego::liberarBloques()
+{
+    if (!matriz) {
         return;
     }
-
     for (int f = 0; f < filas; ++f) {
-        if (matriz_bloques[f]) {
-            for (int c = 0; c < columnas; ++c) {
-                if (matriz_bloques[f][c]) {
-                    escena->removeItem(matriz_bloques[f][c]);
-                    delete matriz_bloques[f][c];
-                    matriz_bloques[f][c] = nullptr;
-                }
-            }
-            delete[] matriz_bloques[f];
-            matriz_bloques[f] = nullptr;
-        }
+        delete[] matriz[f];
+        matriz[f] = nullptr;
     }
-    delete[] matriz_bloques;
-    matriz_bloques = nullptr;
+    delete[] matriz;
+    matriz = nullptr;
 }
 
-void MotorJuego::iniciar() {
-    timer->start(16);
+void MotorJuego::reiniciarPelota()
+{
+    pelota->reiniciar(Config::PELOTA_INICIO_X, Config::PELOTA_INICIO_Y);
 }
 
-void MotorJuego::moverPaleta(double mov) {
-    if (!paleta) {
+void MotorJuego::iniciar()
+{
+    timer->start(Config::FRAME_MS);
+}
+
+void MotorJuego::detener()
+{
+    timer->stop();
+}
+
+// Un cuadro del juego: mover paleta, mover pelota, revisar choques.
+void MotorJuego::actualizarFrame()
+{
+    paleta->actualizar();
+    pelota->mover();
+
+    if (pelota->rebotarParedes()) {
+        emit pelotaPerdida();        // >>> EXTENSION: aqui se resta una vida
+        reiniciarPelota();
         return;
     }
-    qreal nuevaX = paleta->x() + mov;
-    qreal limiteDer = escena->width() - paleta->rect().width();
 
-    if (nuevaX < 0) {
-        nuevaX = 0;
-    } else if (nuevaX > limiteDer) {
-        nuevaX = limiteDer;
-    }
-    paleta->setX(nuevaX);
+    pelota->rebotarConPaleta(paleta->rect());
+    procesarBloques();
 }
 
-void MotorJuego::actualizarFrame() {
-    qreal nx = pelota->x() + vx;
-    qreal ny = pelota->y() + vy;
-    qreal w = pelota->rect().width();
-    qreal h = pelota->rect().height();
+// Revisa la pelota contra cada ladrillo activo. Un ladrillo por cuadro.
+void MotorJuego::procesarBloques()
+{
+    for (int f = 0; f < filas; ++f) {
+        for (int c = 0; c < columnas; ++c) {
+            Bloque &b = matriz[f][c];
+            if (!b.estaActivo()) {
+                continue;
+            }
+            if (!pelota->rebotarContraRect(b.rect())) {
+                continue;
+            }
 
-    if (nx <= 0) {
-        nx = 0;
-        vx = -vx;
-    } else if (nx + w >= escena->width()) {
-        nx = escena->width() - w;
-        vx = -vx;
-    }
-
-    if (ny <= 0) {
-        ny = 0;
-        vy = -vy;
-    } else if (ny + h >= escena->height()) {
-        // Proximamente game over
-        nx = 390;
-        ny = 350;
-        vy = -3.0;
-    }
-
-    bool chocaX = (nx + w >= paleta->x()) && (nx <= paleta->x() + paleta->rect().width());
-    bool chocaY = (vy > 0) && (pelota->y() + h <= paleta->y() + paleta->rect().height()) && (ny + h >= paleta->y());
-    if (chocaX && chocaY) {
-        ny = paleta->y() - h;
-        vy = -vy;
-    }
-
-    if (matriz_bloques) {
-        for (int f = 0; f < filas; ++f) {
-            for (int c = 0; c < columnas; ++c) {
-                QGraphicsRectItem *b = matriz_bloques[f][c];
-                if (!b) {
-                    continue;
-                }
-
-                bool golpeaBloque = (nx + w >= b->x()) && (nx <= b->x() + b->rect().width()) && (ny + h >= b->y()) && (ny <= b->y() + b->rect().height());
-
-                if (golpeaBloque) {
-                    escena->removeItem(b);
-                    delete b;
-                    matriz_bloques[f][c] = nullptr;
-                    vy = -vy;
-                    break;
+            if (b.recibirGolpe()) {          // true = el ladrillo se destruyo
+                --bloquesRestantes;
+                emit bloqueDestruido();      // >>> EXTENSION: aqui se suma puntaje / suelta power-up
+                if (bloquesRestantes == 0) {
+                    emit nivelCompletado();  // >>> EXTENSION: aqui va la pantalla de victoria
+                    if (Config::REINICIAR_AL_COMPLETAR) {
+                        crearNivelBasico();
+                        reiniciarPelota();
+                    }
                 }
             }
+            return;
         }
     }
-
-    pelota->setPos(nx, ny);
 }

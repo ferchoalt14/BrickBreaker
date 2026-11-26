@@ -7,7 +7,7 @@ StartScreen::StartScreen(QWidget *parent) : QWidget(parent) {
     fondo = QPixmap(":/images/startScreen.jpg");
     setFixedSize(820, 620);
 
-    // Botones con fondo oscuro, borde neon y texto en negrita para que resalten.
+
     setStyleSheet(
         "QPushButton { background-color: rgba(8, 10, 30, 230); color: white;"
         "  border: 2px solid #00e5ff; border-radius: 8px;"

@@ -3,13 +3,13 @@
 
 #include <QString>
 
-// Nodo de la lista enlazada de usuarios (cada cuenta registrada).
+
 class Usuario
 {
 private:
     QString nombre;
-    QString hashClave;      // SHA-256 de la clave, nunca la clave en texto plano
-    bool historiaVista;     // true cuando ya vio (o salto) la historia inicial
+    QString hashClave;
+    bool historiaVista;
     Usuario *siguiente;
 
 public:
@@ -23,4 +23,4 @@ public:
     void setSiguiente(Usuario *s) { siguiente = s; }
 };
 
-#endif // USUARIO_H
+#endif

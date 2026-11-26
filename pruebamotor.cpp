@@ -1,5 +1,8 @@
 #include "pruebamotor.h"
+#include "configjuego.h"
 #include <QApplication>
+#include <QColor>
+#include <QPainter>
 #include <QPushButton>
 
 pruebaMotor::pruebaMotor(QWidget *parent): QGraphicsView(parent){
@@ -8,7 +11,13 @@ pruebaMotor::pruebaMotor(QWidget *parent): QGraphicsView(parent){
     setFixedSize(820, 620);
     setWindowTitle("Prueba de MotorJuego - Brick Breaker");
 
-    // Boton para cerrar el programa desde el juego (no roba el foco del teclado).
+    setBackgroundBrush(QColor("#0b0f1e"));
+    setRenderHint(QPainter::Antialiasing);
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    setFocusPolicy(Qt::StrongFocus);
+    viewport()->setMouseTracking(true);
+
     QPushButton *btnSalir = new QPushButton("Salir", viewport());
     btnSalir->setFixedSize(80, 30);
     btnSalir->move(730, 8);
@@ -29,14 +38,45 @@ void pruebaMotor::iniciar() {
     motor->iniciar();
 }
 
-void pruebaMotor::keyPressEvent(QKeyEvent *event) {
-    double mov = 20.0;
+// Teclas de movimiento: se guarda si estan presionadas o no.
+// La paleta se mueve cada cuadro mientras la tecla siga abajo (movimiento fluido).
+// >>> EXTENSION: aqui se agregan mas teclas (pausa, disparo laser, etc.)
+void pruebaMotor::manejarTecla(int tecla, bool presionada) {
+    Paleta *paleta = motor->getPaleta();
 
-    if (event->key() == Qt::Key_Left || event->key() == Qt::Key_A) {
-        motor->moverPaleta(-mov);
-    } else if (event->key() == Qt::Key_Right || event->key() == Qt::Key_D) {
-        motor->moverPaleta(mov);
-    } else {
-        QGraphicsView::keyPressEvent(event);
+    if (tecla == Qt::Key_Left || tecla == Qt::Key_A) {
+        paleta->setIzquierda(presionada);
+    } else if (tecla == Qt::Key_Right || tecla == Qt::Key_D) {
+        paleta->setDerecha(presionada);
     }
+}
+
+void pruebaMotor::keyPressEvent(QKeyEvent *event) {
+    if (event->isAutoRepeat()) {
+        return;                       // se ignora la repeticion automatica del teclado
+    }
+    manejarTecla(event->key(), true);
+    QGraphicsView::keyPressEvent(event);
+}
+
+void pruebaMotor::keyReleaseEvent(QKeyEvent *event) {
+    if (event->isAutoRepeat()) {
+        return;
+    }
+    manejarTecla(event->key(), false);
+    QGraphicsView::keyReleaseEvent(event);
+}
+
+// Si la ventana pierde el foco con una tecla presionada, la paleta se detiene
+void pruebaMotor::focusOutEvent(QFocusEvent *event) {
+    motor->getPaleta()->detener();
+    QGraphicsView::focusOutEvent(event);
+}
+
+// Interruptor en configjuego.h: PALETA_SIGUE_MOUSE
+void pruebaMotor::mouseMoveEvent(QMouseEvent *event) {
+    if (Config::PALETA_SIGUE_MOUSE) {
+        motor->getPaleta()->centrarEn(mapToScene(event->position().toPoint()).x());
+    }
+    QGraphicsView::mouseMoveEvent(event);
 }

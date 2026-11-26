@@ -99,9 +99,7 @@ void StoryScreen::mostrarPagina(int indice)
 {
     paginaActual = indice;
 
-    // La imagen se escala completa al recuadro (sin recortar), aunque el archivo
-    // original sea mucho mas grande. Se escala a los pixeles reales de la
-    // pantalla (zoom de Windows) para que se vea nitida.
+
     if (!imagenes[indice].isNull()) {
         const qreal dpr = devicePixelRatioF();
         QPixmap escalada = imagenes[indice].scaled(QSize(560, 313) * dpr,

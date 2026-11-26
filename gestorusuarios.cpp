@@ -21,7 +21,7 @@ GestorUsuarios::~GestorUsuarios()
     liberar();
 }
 
-// Carpeta de datos del usuario de Windows (siempre escribible, incluso instalado).
+
 QString GestorUsuarios::rutaPorDefecto()
 {
     QString carpeta = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
@@ -30,8 +30,7 @@ QString GestorUsuarios::rutaPorDefecto()
 
 QString GestorUsuarios::calcularHash(const QString &nombre, const QString &clave)
 {
-    // El nombre en minusculas funciona como "sal" para que dos usuarios
-    // con la misma clave no tengan el mismo hash.
+
     QByteArray datos = (nombre.toLower() + ":" + clave).toUtf8();
     QByteArray hash = QCryptographicHash::hash(datos, QCryptographicHash::Sha256);
     return QString::fromLatin1(hash.toHex());
@@ -39,7 +38,7 @@ QString GestorUsuarios::calcularHash(const QString &nombre, const QString &clave
 
 bool GestorUsuarios::nombreValido(const QString &nombre)
 {
-    // 3 a 16 caracteres: letras, numeros y guion bajo.
+
     static const QRegularExpression patron("^[A-Za-z0-9_]{3,16}$");
     return patron.match(nombre).hasMatch();
 }
@@ -86,12 +85,12 @@ void GestorUsuarios::liberar()
     total = 0;
 }
 
-// Formato del archivo: una cuenta por linea -> nombre;hash;historiaVista (0 o 1)
+
 void GestorUsuarios::cargar()
 {
     std::ifstream archivo{std::filesystem::path(rutaArchivo.toStdWString())};
     if (!archivo.is_open()) {
-        return; // primera ejecucion: todavia no hay cuentas
+        return;
     }
 
     std::string linea;
@@ -101,12 +100,12 @@ void GestorUsuarios::cargar()
         }
         std::size_t pos = linea.find(';');
         if (pos == std::string::npos || pos == 0 || pos + 1 >= linea.size()) {
-            continue; // linea danada, se ignora
+            continue;
         }
         QString nombre = QString::fromStdString(linea.substr(0, pos));
         std::string resto = linea.substr(pos + 1);
 
-        // El tercer campo es opcional (archivos de versiones anteriores no lo tienen).
+
         std::size_t pos2 = resto.find(';');
         bool vista = false;
         if (pos2 != std::string::npos) {
@@ -157,7 +156,7 @@ ResultadoRegistro GestorUsuarios::registrar(const QString &nombre, const QString
     agregarAlFinal(nuevo);
 
     if (!guardar()) {
-        // No se pudo guardar: se deshace para no dejar la lista inconsistente.
+
         if (cabeza == nuevo) {
             cabeza = nullptr;
             cola = nullptr;

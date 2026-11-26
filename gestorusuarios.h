@@ -12,8 +12,7 @@ enum class ResultadoRegistro {
     ErrorGuardado
 };
 
-// Administra las cuentas con una lista enlazada propia (sin QList/std::vector)
-// y las guarda en un archivo de texto para que persistan entre ejecuciones.
+
 class GestorUsuarios
 {
 private:
@@ -35,7 +34,7 @@ public:
     GestorUsuarios();
     ~GestorUsuarios();
 
-    // La lista maneja memoria propia: se prohibe copiarla.
+
     GestorUsuarios(const GestorUsuarios&) = delete;
     GestorUsuarios& operator=(const GestorUsuarios&) = delete;
 
@@ -50,4 +49,4 @@ public:
     static bool claveValida(const QString &clave);
 };
 
-#endif // GESTORUSUARIOS_H
+#endif

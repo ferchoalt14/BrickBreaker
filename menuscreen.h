@@ -6,7 +6,7 @@
 #include <QLabel>
 #include <QPushButton>
 
-// Menu principal despues de iniciar sesion (fondo basicScreen).
+
 class MenuScreen : public QWidget
 {
     Q_OBJECT
@@ -35,4 +35,4 @@ private:
     QPushButton *btnCerrarSesion;
 };
 
-#endif // MENUSCREEN_H
+#endif

@@ -9,7 +9,7 @@
 #include <QPushButton>
 #include "gestorusuarios.h"
 
-// Pantalla unica para "Iniciar sesion" y "Crear cuenta" (mismo fondo, cambia el modo).
+
 class LoginScreen : public QWidget
 {
     Q_OBJECT

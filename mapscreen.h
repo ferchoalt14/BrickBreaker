@@ -6,7 +6,7 @@
 #include <QPushButton>
 #include <QLabel>
 
-// Mapa de misiones (fondo levelsScreen). Por ahora solo el nivel 1 esta disponible.
+
 class MapScreen : public QWidget
 {
     Q_OBJECT

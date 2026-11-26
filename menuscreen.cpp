@@ -70,7 +70,7 @@ void MenuScreen::construirInterfaz()
 
     connect(btnMapa, &QPushButton::clicked, this, &MenuScreen::mapaClicked);
     connect(btnCerrarSesion, &QPushButton::clicked, this, &MenuScreen::cerrarSesionClicked);
-    // Configuracion y Perfil todavia no estan hechos.
+
     connect(btnConfiguracion, &QPushButton::clicked, this, &MenuScreen::mostrarProximamente);
     connect(btnPerfil, &QPushButton::clicked, this, &MenuScreen::mostrarProximamente);
 }

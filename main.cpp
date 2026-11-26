@@ -11,13 +11,13 @@
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
 
-    // Se crea antes que la ventana: se destruye despues de ella.
+
     GestorUsuarios gestor;
 
     QStackedWidget stack;
     stack.setWindowTitle("Brick Breaker");
     stack.setFixedSize(820, 620);
-    // Sin boton de cerrar (X): la unica forma de salir es el boton "Salir".
+
     stack.setWindowFlags(Qt::Window | Qt::CustomizeWindowHint |
                          Qt::WindowTitleHint | Qt::WindowMinimizeButtonHint);
 
@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
 
     QString usuarioActual;
 
-    // Primera vez de la cuenta -> historia; si ya la vio -> menu principal.
+
     QObject::connect(loginScreen, &LoginScreen::loginExitoso,
                      [&](const QString &usuario) {
         usuarioActual = usuario;
@@ -66,7 +66,7 @@ int main(int argc, char *argv[]) {
         }
     });
 
-    // Al terminar o saltar la historia se recuerda para no mostrarla otra vez.
+
     QObject::connect(storyScreen, &StoryScreen::historiaTerminada, [&]() {
         gestor.marcarHistoriaVista(usuarioActual);
         stack.setCurrentWidget(menuScreen);
