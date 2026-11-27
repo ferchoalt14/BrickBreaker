@@ -23,6 +23,8 @@ private:
     int columnas;
     Bloque **matriz;           // matriz dinamica con punteros dobles (new / delete[])
     int bloquesRestantes;      // ladrillos destructibles que quedan
+    long int cuadros;
+    int tiempoS;
 
     void crearNivelBasico();
     void crearNivel2();
@@ -39,7 +41,7 @@ signals:
     void bloqueDestruido();
     void pelotaPerdida();
     void nivelCompletado();
-
+    void segundoTranscurrido(int tiempoRestante);
 public:
     explicit MotorJuego(QObject *padre = nullptr);
     ~MotorJuego() override;

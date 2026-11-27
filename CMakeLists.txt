@@ -26,6 +26,7 @@ qt_add_executable(BrickBreaker
     usuario.h usuario.cpp
     gestorusuarios.h gestorusuarios.cpp
     resources.qrc
+    powerup.h powerup.cpp
 )
 
 target_link_libraries(BrickBreaker PRIVATE

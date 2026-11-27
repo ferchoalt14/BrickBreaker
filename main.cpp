@@ -100,6 +100,10 @@ int main(int argc, char *argv[]) {
         gameView->setFocus();
     });
 
+    QObject::connect(gameView, &pruebaMotor::salirPresionado, [&stack, mapScreen]() {
+        stack.setCurrentWidget(mapScreen);
+    });
+
     stack.show();
     return app.exec();
 }

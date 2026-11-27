@@ -5,6 +5,8 @@
 #include <QKeyEvent>
 #include <QMouseEvent>
 #include <QFocusEvent>
+#include <QPushButton>
+#include <QLabel>
 #include "motorjuego.h"
 
 // La ventana del juego: muestra la escena y traduce teclado/mouse a ordenes para la paleta.
@@ -15,6 +17,17 @@ private:
     MotorJuego *motor;
 
     void manejarTecla(int tecla, bool presionada);
+
+    QLabel* crearlblTimer();
+
+    QLabel *lblTimer;
+    QPushButton *btnSalir;
+
+signals:
+    void salirPresionado();
+
+private slots:
+    void actualizarTimer(int tiempoRestante);
 
 protected:
     void keyPressEvent(QKeyEvent *event) override;

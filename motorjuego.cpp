@@ -17,6 +17,7 @@ MotorJuego::MotorJuego(QObject *parent) : QObject(parent),
     timer = new QTimer(this);
     timer->setTimerType(Qt::PreciseTimer);   // temporizador de alta precision
     connect(timer, &QTimer::timeout, this, &MotorJuego::actualizarFrame);
+    tiempoS = 0;
 }
 
 // Orden importante: la escena (hija de este objeto) sigue viva mientras
@@ -96,6 +97,7 @@ void MotorJuego::crearNivel2(){
     columnas = Config::COLUMNAS;
     bloquesRestantes  = 0;
 
+
     matriz = new Bloque*[filas];
     for (int f = 0; f < filas; ++f) {
         matriz[f] = new Bloque[columnas];
@@ -138,10 +140,12 @@ void MotorJuego::iniciar(int nivel)
 {
     switch(nivel){
     case Config::NIVEL_1:{
+        tiempoS = 120;
         crearNivelBasico();
         break;
     }
     case Config::NIVEL_2:{
+        tiempoS = 300;
         crearNivel2();
         break;
     }
@@ -150,6 +154,9 @@ void MotorJuego::iniciar(int nivel)
         break;
     }
     }
+    pelota->reiniciar(Config::PELOTA_INICIO_X,Config::PELOTA_INICIO_Y);
+    paleta->reiniciar();
+
     timer->start(Config::FRAME_MS);
 }
 
@@ -172,6 +179,12 @@ void MotorJuego::actualizarFrame()
 
     pelota->rebotarConPaleta(paleta->rect());
     procesarBloques();
+    cuadros++;
+    if(cuadros == 60){
+        cuadros = 0;
+        tiempoS--;
+        emit segundoTranscurrido(tiempoS);
+    }
 }
 
 // Revisa la pelota contra cada ladrillo activo. Un ladrillo por cuadro.
