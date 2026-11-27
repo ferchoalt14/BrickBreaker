@@ -12,7 +12,7 @@ MotorJuego::MotorJuego(QObject *parent) : QObject(parent),
 
     paleta = new Paleta(escena);
     pelota = new Pelota(escena);
-    crearNivelBasico();
+    //crearNivelBasico();
 
     timer = new QTimer(this);
     timer->setTimerType(Qt::PreciseTimer);   // temporizador de alta precision
@@ -35,11 +35,29 @@ MotorJuego::~MotorJuego()
 
 // >>> EXTENSION (niveles 2 y 3): aqui se decide que tipo de ladrillo va en cada celda.
 // Ejemplo nivel 2: fila 0 -> Reforzado; columna 7 -> Indestructible.
-TipoBloque MotorJuego::tipoParaCelda(int fila, int columna) const
+TipoBloque MotorJuego::tipoParaCelda(int fila, int columna, int nivel) const
 {
-    Q_UNUSED(fila);
-    Q_UNUSED(columna);
-    return TipoBloque::Normal;
+    switch(nivel){
+    case Config::NIVEL_1:{
+        Q_UNUSED(fila);
+        Q_UNUSED(columna);
+        return TipoBloque::Normal;
+        break;
+    }
+    case Config::NIVEL_2:
+        if(fila == 0 || fila == 7 || columna == 0 || columna == 14){
+            return TipoBloque::Reforzado;
+        }
+        return TipoBloque::Normal;
+        break;
+    default:
+        Q_UNUSED(fila);
+        Q_UNUSED(columna);
+        return TipoBloque::Normal;
+        break;
+    }
+
+
 }
 
 void MotorJuego::crearNivelBasico()
@@ -60,7 +78,34 @@ void MotorJuego::crearNivelBasico()
         for (int c = 0; c < columnas; ++c) {
             double x = Config::BLOQUES_INICIO_X + c * (Config::BLOQUE_ANCHO + Config::BLOQUE_SEPARACION);
             double y = Config::BLOQUES_INICIO_Y + f * (Config::BLOQUE_ALTO + Config::BLOQUE_SEPARACION);
-            TipoBloque tipo = tipoParaCelda(f, c);
+            TipoBloque tipo = tipoParaCelda(f, c, 1);
+
+            matriz[f][c].crear(escena, x, y, tipo);
+            if (tipo != TipoBloque::Indestructible) {
+                ++bloquesRestantes;
+            }
+        }
+    }
+}
+
+void MotorJuego::crearNivel2(){
+
+    liberarBloques();
+
+    filas = Config::FILAS;
+    columnas = Config::COLUMNAS;
+    bloquesRestantes  = 0;
+
+    matriz = new Bloque*[filas];
+    for (int f = 0; f < filas; ++f) {
+        matriz[f] = new Bloque[columnas];
+    }
+
+    for (int f = 0; f < filas; ++f) {
+        for (int c = 0; c < columnas; ++c) {
+            double x = Config::BLOQUES_INICIO_X + c * (Config::BLOQUE_ANCHO + Config::BLOQUE_SEPARACION);
+            double y = Config::BLOQUES_INICIO_Y + f * (Config::BLOQUE_ALTO + Config::BLOQUE_SEPARACION);
+            TipoBloque tipo = tipoParaCelda(f, c, Config::NIVEL_2);
 
             matriz[f][c].crear(escena, x, y, tipo);
             if (tipo != TipoBloque::Indestructible) {
@@ -89,8 +134,22 @@ void MotorJuego::reiniciarPelota()
     pelota->reiniciar(Config::PELOTA_INICIO_X, Config::PELOTA_INICIO_Y);
 }
 
-void MotorJuego::iniciar()
+void MotorJuego::iniciar(int nivel)
 {
+    switch(nivel){
+    case Config::NIVEL_1:{
+        crearNivelBasico();
+        break;
+    }
+    case Config::NIVEL_2:{
+        crearNivel2();
+        break;
+    }
+    default:{
+        crearNivelBasico();
+        break;
+    }
+    }
     timer->start(Config::FRAME_MS);
 }
 

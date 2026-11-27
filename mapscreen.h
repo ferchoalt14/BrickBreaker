@@ -16,6 +16,7 @@ public:
 
 signals:
     void jugarNivel1Clicked();
+    void jugarNivel2Clicked();
     void volverClicked();
 
 protected:
@@ -25,6 +26,8 @@ private:
     QPixmap fondo;
     QPushButton *btnNivel1;
     QLabel *lblNivel1;
+    QPushButton *btnNivel2;
+    QLabel *lblNivel2;
     QPushButton *btnVolver;
 };
 

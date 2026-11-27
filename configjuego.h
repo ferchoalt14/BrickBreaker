@@ -42,6 +42,10 @@ namespace Config {
     constexpr bool   PALETA_SIGUE_MOUSE       = false; // true: la paleta tambien sigue al mouse
     constexpr bool   REINICIAR_AL_COMPLETAR   = true;  // true: al romper todo, se arma el nivel otra vez
                                                        // (temporal, hasta tener pantalla de victoria)
+
+    constexpr int NIVEL_1 = 1;
+    constexpr int NIVEL_2 = 2;
+    constexpr int NIVEL_3 = 3;
 }
 
 #endif // CONFIGJUEGO_H

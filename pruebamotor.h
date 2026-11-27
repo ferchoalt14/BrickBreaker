@@ -25,7 +25,7 @@ protected:
 public:
     explicit pruebaMotor(QWidget *parent = nullptr);
     ~pruebaMotor() override;
-    void iniciar();
+    void iniciar(int nivel);
 };
 
 #endif // PRUEBAMOTOR_H

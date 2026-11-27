@@ -25,7 +25,8 @@ private:
     int bloquesRestantes;      // ladrillos destructibles que quedan
 
     void crearNivelBasico();
-    TipoBloque tipoParaCelda(int fila, int columna) const;
+    void crearNivel2();
+    TipoBloque tipoParaCelda(int fila, int columna, int nivel) const;
     void liberarBloques();
     void procesarBloques();
     void reiniciarPelota();
@@ -47,7 +48,7 @@ public:
     Paleta* getPaleta() const { return paleta; }
     Pelota* getPelota() const { return pelota; }
 
-    void iniciar();
+    void iniciar(int nivel);
     void detener();
 };
 

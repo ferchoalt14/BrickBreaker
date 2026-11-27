@@ -34,8 +34,8 @@ pruebaMotor::~pruebaMotor() {
     motor = nullptr;
 }
 
-void pruebaMotor::iniciar() {
-    motor->iniciar();
+void pruebaMotor::iniciar(int nivel) {
+    motor->iniciar(nivel);
 }
 
 // Teclas de movimiento: se guarda si estan presionadas o no.

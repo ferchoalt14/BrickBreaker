@@ -7,6 +7,7 @@
 #include "mapscreen.h"
 #include "pruebamotor.h"
 #include "gestorusuarios.h"
+#include "configjuego.h"
 
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
@@ -89,7 +90,13 @@ int main(int argc, char *argv[]) {
 
     QObject::connect(mapScreen, &MapScreen::jugarNivel1Clicked, [&stack, gameView]() {
         stack.setCurrentWidget(gameView);
-        gameView->iniciar();
+        gameView->iniciar(Config::NIVEL_1);
+        gameView->setFocus();
+    });
+
+    QObject::connect(mapScreen, &MapScreen::jugarNivel2Clicked, [&stack, gameView]() {
+        stack.setCurrentWidget(gameView);
+        gameView->iniciar(Config::NIVEL_2);
         gameView->setFocus();
     });
 
